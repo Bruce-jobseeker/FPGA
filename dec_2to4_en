@@ -1,0 +1,9 @@
+module dec_2to4_en(
+    input [1:0] dec_in,
+    input enable,
+    output [3:0] dec_out
+    );
+    
+    assign dec_out=(enable ? 4'b0000 : 4'b0001<<dec_in);
+    
+endmodule
