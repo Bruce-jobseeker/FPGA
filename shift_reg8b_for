@@ -1,0 +1,22 @@
+module shift_reg8b_for(
+    input clk,
+    input rst,
+    input sdin,
+    output [7:0] dout
+    );
+    
+    reg [7:0] q;
+    integer i;
+    assign dout=q;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) q<=8'b0000_0000;
+    else begin
+    for(i=0; i<7; i=i+1) begin 
+    q[i+1]<=q[i];
+    end
+    q[0]<=sdin;
+    end
+    end
+    
+endmodule
