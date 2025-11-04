@@ -1,0 +1,19 @@
+module tb_LFSR_8b(
+
+    );
+    
+    reg clk, rst;
+    wire [7:0] cnt;
+    
+    LFSR_8b U0 (clk, rst, cnt);
+    
+    initial begin
+    clk=1'b0; rst=1'b1;
+    #15 rst=1'b0;
+    #3000 $finish;
+    end
+    
+    always
+    #10 clk=~clk;
+    
+endmodule
