@@ -1,0 +1,20 @@
+module tb_ud_cnt8b(
+
+    );
+    
+    reg clk, rst, mode;
+    wire [7:0] cnt;
+    
+    ud_cnt8b U0 (clk, rst, mode, cnt);
+    
+    initial begin
+    clk=1'b0; rst=1'b1; mode=1'b0;
+    #10 rst=1'b0;
+    #200 mode=1'b1;
+    #200 $finish;
+    end
+    
+    always
+    #10 clk=~clk;
+    
+endmodule
