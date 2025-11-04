@@ -1,0 +1,15 @@
+module tb_or2 ();
+reg a, b;
+wire y;
+
+or2_if U0 (.a(a), .b(b), .y(y));
+
+initial begin
+a=1'b0; b=1'b0;
+#10 a=1'b0; b=1'b1;
+#10 a=1'b1; b=1'b0;
+#10 a=1'b1; b=1'b1;
+#10 a=1'b0; b=1'b0;
+#20 $finish;
+end
+endmodule
