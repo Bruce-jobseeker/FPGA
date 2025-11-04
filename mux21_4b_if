@@ -1,0 +1,15 @@
+module mux21_4b_if(
+    input [3:0] a,
+    input [3:0] b,
+    input sel,
+    output [3:0] out
+    );
+    
+    reg [3:0] out;
+    
+    always@(a, b, sel) begin
+    if(sel==1'b1) out=a;
+    else if(sel==1'b0) out=b;
+    end
+    
+endmodule
