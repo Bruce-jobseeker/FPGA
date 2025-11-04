@@ -1,0 +1,37 @@
+module ha_primitive_1(
+    input a,
+    input b,
+    output s1,
+    output c1
+    );
+    
+    xor (s1, a, b);
+    and (c1, a, b);
+    
+endmodule
+
+module ha_primitive_2(
+    input s1,
+    input cin,
+    output sum,
+    output c2
+    );
+    
+    xor (sum, s1, cin);
+    and (c2, s1, cin);
+    
+endmodule
+
+module fa_ha_instance(
+    input a,
+    input b,
+    input cin,
+    output sum,
+    output cout
+    );
+    
+    ha_primitive_1 U0 (a, b, s1, c1);
+    ha_primitive_2 U1(s1, cin ,sum, c2);
+    or (cout, c2, c1);
+    
+endmodule
