@@ -1,0 +1,21 @@
+module tb_LRS_ring_cnt8b(
+
+    );
+    
+    reg clk, rst, mode;
+    wire [7:0] cnt;
+    
+    LRS_ring_cnt8b_conop U0 (clk, rst, mode, cnt);
+    
+    initial begin
+    clk=1'b0; rst=1'b1; mode=1'b1;
+    #10 rst=1'b0;
+    #150 rst=1'b1;
+    #10 rst=1'b0; mode=1'b0;
+    #150 $finish;
+    end
+    
+    always
+    #10 clk=~clk;
+    
+endmodule
