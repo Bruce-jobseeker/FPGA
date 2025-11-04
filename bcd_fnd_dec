@@ -1,0 +1,32 @@
+ function [7:0] bcd_to_fnd;
+    
+    input [3:0] bcd_val;
+    
+    begin
+    case(bcd_val)
+    4'b0000 : bcd_to_fnd=8'b0011_1111;
+    4'b0001 : bcd_to_fnd=8'b0000_0110;
+    4'b0010 : bcd_to_fnd=8'b0101_1011;
+    4'b0011 : bcd_to_fnd=8'b0100_1111;
+    4'b0100 : bcd_to_fnd=8'b0110_0110;
+    4'b0101 : bcd_to_fnd=8'b0110_1101;
+    4'b0110 : bcd_to_fnd=8'b0111_1101;
+    4'b0111 : bcd_to_fnd=8'b0000_0111;
+    4'b1000 : bcd_to_fnd=8'b0111_1111;
+    4'b1001 : bcd_to_fnd=8'b0110_0111;
+    default : bcd_to_fnd=8'b0011_1111;
+    endcase
+    end
+    endfunction
+
+module bcd_fnd_dec(
+    input [3:0] bcd_in,
+    output [7:0] fnd_data
+    );
+   
+   `include "bcd_to_fnd.v"
+   
+   assign fnd_data=bcd_to_fnd(bcd_in);
+   
+    
+endmodule
