@@ -1,0 +1,29 @@
+module shift_reg8b_pld(
+    input clk,
+    input rst,
+    input load,
+    input mode,
+    input [7:0] din,
+    output [7:0] pout
+    );
+    
+    reg [7:0] reg_tmp;
+    assign pout=reg_tmp;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) reg_tmp<=8'b0000_0001;
+    else begin
+    
+    if(load) reg_tmp<=din;
+    
+    else if(!load)
+    if(mode) begin reg_tmp<=reg_tmp>>1; reg_tmp[7]<=reg_tmp[0];
+    end
+    
+    else if(!mode) begin reg_tmp<=reg_tmp<<1; reg_tmp[0]<=reg_tmp[7];
+    end
+    
+    end
+    end
+    
+endmodule
