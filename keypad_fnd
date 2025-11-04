@@ -1,0 +1,102 @@
+function [7:0] fnd_dis;
+input [11:0] key_data;
+begin
+case(key_data)
+12'b0000_0000_0001 : fnd_dis=8'b0000_0110;
+12'b0000_0000_0010 : fnd_dis=8'b0101_1011;
+12'b0000_0000_0100 : fnd_dis=8'b0100_1111;
+12'b0000_0000_1000 : fnd_dis=8'b0110_0110;
+12'b0000_0001_0000 : fnd_dis=8'b0110_1101;
+12'b0000_0010_0000 : fnd_dis=8'b0111_1101;
+12'b0000_0100_0000 : fnd_dis=8'b0010_0111;
+12'b0000_1000_0000 : fnd_dis=8'b0111_1111;
+12'b0001_0000_0000 : fnd_dis=8'b0110_1111;
+12'b0010_0000_0000 : fnd_dis=8'b0011_1111;
+12'b0100_0000_0000 : fnd_dis=8'b0111_0111;
+12'b1000_0000_0000 : fnd_dis=8'b0111_1100;
+default : fnd_dis=8'b0000_0000;
+endcase
+end
+endfunction
+
+module keypad_led (
+    input clk,
+    input rst,
+    output [3:0] row,         // Rows driven by FPGA
+    input [2:0] col,              // Columns read from keypad
+    output [7:0] led          // 8 LEDs
+);
+
+   reg [3:0] row;
+   reg [7:0] led;
+
+    reg [3:0] scan_cnt;
+    reg [7:0] key_map;
+
+
+    reg [9:0] cnt_clk;
+    reg clk_10khz;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_10khz<=0; end
+    else begin
+    if(cnt_clk==599) begin cnt_clk<=0; clk_10khz<=~clk_10khz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+
+    always @(posedge clk_10khz or posedge rst) begin
+        if (rst) begin
+            scan_cnt <= 0;
+            row <= 4'b1110;
+            key_map <= 8'b00000000;
+            led <= 8'b00000000;
+        end else begin
+            // Rotate row scanning
+            scan_cnt <= scan_cnt + 1;
+            case (scan_cnt[1:0])
+                2'b00: row <= 4'b1110;
+                2'b01: row <= 4'b1101;
+                2'b10: row <= 4'b1011;
+                2'b11: row <= 4'b0111;
+            endcase
+
+            // Detect key press and map to LED
+            if (col != 3'b111) begin
+                case ({row, col})
+                    7'b1110_110: key_map <= 8'b00000001; // Key 1
+                    7'b1110_101: key_map <= 8'b00000010; // Key 2
+                    7'b1110_011: key_map <= 8'b00000100; // Key 3
+                    7'b1101_110: key_map <= 8'b00001000; // Key 4
+                    7'b1101_101: key_map <= 8'b00010000; // Key 5
+                    7'b1101_011: key_map <= 8'b00100000; // Key 6
+                    7'b1011_110: key_map <= 8'b01000000; // Key 7
+                    7'b1011_101: key_map <= 8'b10000000; // Key 8
+                    default: key_map <= 8'b00000000;
+                endcase
+            end else begin
+                key_map <= 8'b00000000;
+            end
+
+            led <= key_map;
+        end
+    end
+endmodule
+
+module keypad_fnd(
+    input clk,
+    input rst,
+    output [3:0] row,
+    input [2:0] col,
+    output [7:0] fnd_data
+    );
+    
+    wire [11:0] led;
+    
+    `include "fnd_dis.v"
+    
+    keypad_led U0 (clk, rst, row, col, led);
+    
+    assign fnd_data=fnd_dis(led);
+    
+endmodule
