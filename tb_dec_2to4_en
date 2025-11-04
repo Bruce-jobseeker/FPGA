@@ -1,0 +1,21 @@
+module tb_dec_2to4_en(
+
+    );
+    
+    reg [1:0] dec_in;
+    reg enable;
+    wire [3:0] dec_out;
+    
+    dec_2to4_en U0 (dec_in, enable, dec_out);
+    
+    initial begin
+    enable=1'b0; dec_in=2'b00;
+    #40 enable=1'b1; dec_in=2'b00;
+    #10 enable=1'b0;
+    #40 $finish;
+    end
+    
+    always
+    #10 dec_in=dec_in+1;
+    
+endmodule
