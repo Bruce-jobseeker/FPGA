@@ -1,0 +1,27 @@
+module tb_reg_8b(
+
+    );
+    
+    reg clk, rst;
+    reg [7:0] din;
+    wire [7:0] dout;
+    integer i;
+    
+    reg_8b U0 (clk, rst, din, dout);
+    
+    initial begin
+    clk=0; rst=0;
+    #5 rst=1;
+    #15 rst=0;
+    end
+    
+    always #5 clk=~clk;
+    
+    always begin
+    for(i=0; i<=255; i=i+1) begin
+    #10 din<=i;
+    end
+    #20 $finish;
+    end
+    
+endmodule
