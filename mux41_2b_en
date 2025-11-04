@@ -1,0 +1,24 @@
+module mux41_2b_en(
+    input [1:0] a,
+    input [1:0] b,
+    input [1:0] c,
+    input [1:0] d,
+    input [1:0] sel,
+    input enable,
+    output [1:0] out
+    );
+    
+    reg [1:0] out;
+    
+    always@(a, b, c, d, sel, enable) begin
+    
+    if(enable==1'b1) out=2'b00;
+    else begin
+    if(sel==2'b00) out=a;
+    else if(sel==2'b01) out=b;
+    else if(sel==2'b10) out=c;
+    else if(sel==2'b11) out=d;
+    end
+    end
+    
+endmodule
