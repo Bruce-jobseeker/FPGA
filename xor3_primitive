@@ -1,0 +1,10 @@
+module xor3_primitive(
+    input a,
+    input b,
+    input c,
+    output y
+    );
+    
+    xor U0 (y, a, b, c);
+    
+endmodule
