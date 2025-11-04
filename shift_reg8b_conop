@@ -1,0 +1,20 @@
+module shift_reg8b_conop(
+    input clk,
+    input rst,
+    input sdin,
+    output [7:0] dout
+    );
+    
+    reg [7:0] q;
+    
+    assign dout=q;
+    
+    always@(posedge clk, posedge rst) begin
+    
+    if(rst) q=8'b0000_0000;
+    else
+    {q[7], q[6], q[5], q[4], q[3], q[2], q[1], q[0]}<={q[6], q[5], q[4], q[3], q[2], q[1], q[0], sdin};
+    
+    end
+    
+endmodule
