@@ -1,0 +1,15 @@
+module nor2_if(
+    input a,
+    input b,
+    output y
+    );
+    
+    reg y;
+    
+    always@(a, b) begin
+    if(a==0 & b==0) y=1;
+    else y=0;
+    end
+    
+    
+endmodule
