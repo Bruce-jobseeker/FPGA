@@ -1,0 +1,277 @@
+function [7:0] data_line1;
+input [3:0] addr_in;
+
+begin
+case(addr_in)
+0 : data_line1=8'b0010_0000;
+1 : data_line1=8'b0100_0100;
+2 : data_line1=8'b0110_1001;
+3 : data_line1=8'b0110_0111;
+4 : data_line1=8'b0110_1001;
+5 : data_line1=8'b0111_0100;
+6 : data_line1=8'b0110_0001;
+7 : data_line1=8'b0110_1100;
+8 : data_line1=8'b0010_0000;
+9 : data_line1=8'b0100_0100;
+10 : data_line1=8'b0110_0101;
+11 : data_line1=8'b0111_0011;
+12 : data_line1=8'b0110_1001;
+13 : data_line1=8'b0110_0111;
+14 : data_line1=8'b0110_1110;
+15 : data_line1=8'b0010_0000;
+default : data_line1=8'b0000_0000;
+endcase
+end
+
+endfunction
+
+function [7:0] data_line2;
+input [3:0] addr_in;
+
+begin
+case(addr_in)
+0 : data_line2=8'b1011_1000;
+1 : data_line2=8'b1010_0001;
+2 : data_line2=8'b0111_0100;
+3 : data_line2=8'b0110_1000;
+4 : data_line2=8'b0010_0000;
+5 : data_line2=8'b0101_0110;
+6 : data_line2=8'b0110_0101;
+7 : data_line2=8'b0111_0010;
+8 : data_line2=8'b1010_0001;
+9 : data_line2=8'b0111_1100;
+10 : data_line2=8'b0110_1111;
+11 : data_line2=8'b0110_0111;
+12 : data_line2=8'b0010_0000;
+13 : data_line2=8'b0100_1000;
+14 : data_line2=8'b0100_0100;
+15 : data_line2=8'b0100_1100;
+default : data_line2=8'b0000_0000;
+endcase
+end
+
+endfunction
+
+function [7:0] data_line3;
+input [3:0] addr_in;
+
+begin
+case(addr_in)
+0 : data_line3=8'b0010_0000;
+1 : data_line3=8'b0101_1001;
+2 : data_line3=8'b0110_1111;
+3 : data_line3=8'b0111_0101;
+4 : data_line3=8'b0111_0010;
+5 : data_line3=8'b0010_0000;
+6 : data_line3=8'b0100_1110;
+7 : data_line3=8'b0110_0001;
+8 : data_line3=8'b0110_1101;
+9 : data_line3=8'b0110_0101;
+10 : data_line3=8'b0010_0000;
+11 : data_line3=8'b0010_0000;
+12 : data_line3=8'b0010_0000;
+13 : data_line3=8'b0010_0000;
+14 : data_line3=8'b0010_0000;
+15 : data_line3=8'b0010_0000;
+endcase
+end
+
+endfunction
+
+function [7:0] data_line4;
+input [3:0] addr_in;
+
+begin
+case(addr_in)
+0 : data_line4=8'b0010_0000;
+1 : data_line4=8'b0100_0101;
+2 : data_line4=8'b0111_1100;
+3 : data_line4=8'b0110_0101;
+4 : data_line4=8'b0110_0011;
+5 : data_line4=8'b0111_0100;
+6 : data_line4=8'b0111_0010;
+7 : data_line4=8'b0110_1111;
+8 : data_line4=8'b0110_1110;
+9 : data_line4=8'b0110_1001;
+10 : data_line4=8'b0110_0011;
+11 : data_line4=8'b0010_0000;
+12 : data_line4=8'b0100_0101;
+13 : data_line4=8'b0110_1110;
+14 : data_line4=8'b0110_0111;
+15 : data_line4=8'b0010_0000;
+endcase
+end
+
+endfunction
+
+module lcd_2frame_disp(
+    input mclk,
+    input reset,
+    output lcd_e,
+    output lcd_rs,
+    output lcd_rw,
+    output [7:0] lcd_data
+    );
+    
+    reg [3:0] lcd_routine;
+    reg [7:0] lcd_data;
+    reg [2:0] cnt_clk;
+    reg [4:0] cnt_delay_20m, cnt_line;
+    reg [8:0] cnt_delay_2sec;
+    reg lcd_e, lcd_rs, before_state;
+    
+    parameter delay_100ms=0;
+    parameter function_set=1;
+    parameter entry_mode=2;
+    parameter disp_on=3;
+    parameter disp_line1=4;
+    parameter disp_line2=5;
+    parameter delay_2sec=6;
+    parameter disp_line3=7;
+    parameter disp_line4=8;
+    parameter delay_2sec_B=9;
+    parameter clear=10;
+    
+    parameter address_line1=8'b1000_0000;
+    parameter address_line2=8'b1100_0000;
+    
+    `include "data_line1.v"
+    `include "data_line2.v"
+    `include "data_line3.v"
+    `include "data_line4.v"
+    
+    reg [12:0] cnt_mclk;
+    reg clk;
+    
+    always@(posedge mclk, posedge reset) begin
+    if(reset) begin cnt_mclk<=0; clk<=0; end
+    else begin
+    if(cnt_mclk==5999) begin cnt_mclk<=0; clk<=~clk; end
+    else cnt_mclk<=cnt_mclk+1;
+    end
+    end
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) cnt_clk<=0;
+    else begin
+    if(cnt_clk==4) cnt_clk<=0;
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) cnt_delay_20m<=0;
+    else begin
+    if(lcd_routine==delay_100ms) begin
+    if(cnt_clk==4) begin
+    if(cnt_delay_20m==19) cnt_delay_20m<=0;
+    else cnt_delay_20m<=cnt_delay_20m+1;
+    end
+    end
+    else cnt_delay_20m<=0;
+    end
+    end
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) cnt_delay_2sec<=0;
+    else begin
+    if(lcd_routine==delay_2sec || lcd_routine==delay_2sec_B) begin
+    if(cnt_clk==4) begin
+    if(cnt_delay_2sec==399) cnt_delay_2sec<=0;
+    else cnt_delay_2sec<=cnt_delay_2sec+1;
+    end
+    end
+    else cnt_delay_2sec<=0;
+    end
+    end
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) cnt_line<=0;
+    else begin
+    if(lcd_routine==disp_line1 || lcd_routine==disp_line2 || lcd_routine==disp_line3 || lcd_routine==disp_line4) begin
+    if(cnt_clk==4) begin
+    if(cnt_line==16) cnt_line<=0;
+    else cnt_line<=cnt_line+1;
+    end
+    end
+    else cnt_line<=0;
+    end
+    end
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) lcd_routine<=delay_100ms;
+    else begin
+    if(cnt_clk==3'b100) begin
+    case(lcd_routine)
+    delay_100ms : if(cnt_delay_20m==19) lcd_routine<=function_set;
+    function_set : lcd_routine<=entry_mode;
+    entry_mode : lcd_routine<=disp_on;
+    disp_on : lcd_routine<=disp_line1;
+    disp_line1 : if(cnt_line==16) lcd_routine<=disp_line2;
+    disp_line2 : if(cnt_line==16) lcd_routine<=delay_2sec;
+    delay_2sec : if(cnt_delay_2sec==399) lcd_routine<=disp_line3;
+    disp_line3 : if(cnt_line==16)lcd_routine<=disp_line4;
+    disp_line4 : if(cnt_line==16) lcd_routine<=delay_2sec_B;
+    delay_2sec_B : if(cnt_delay_2sec==399) lcd_routine<=clear;
+    clear : lcd_routine<=disp_line1;
+    endcase
+    end
+    end
+    end
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) lcd_rs<=1'b0;
+    else begin
+    if(lcd_routine==disp_line1 || lcd_routine==disp_line2 || lcd_routine==disp_line3 || lcd_routine==disp_line4) begin
+    if(cnt_line==0) lcd_rs<=0;
+    else lcd_rs<=1;
+    end
+    else lcd_rs=1'b0;
+    end
+    end
+    
+    assign lcd_rw=1'b0;
+    
+    always@(posedge clk, posedge reset) begin
+    if(reset) begin
+    lcd_data<=8'b0000_0000;
+    lcd_e<=1'b0;
+    end
+    else begin
+    case(lcd_routine)
+    delay_100ms : begin lcd_data<=8'b0000_0000; lcd_e<=1'b0; end
+    function_set : begin lcd_data<=8'b0011_1000;
+                   lcd_e<=(cnt_clk==1);
+                   end
+    entry_mode : begin lcd_data<=8'b0000_0110; lcd_e<=(cnt_clk==1); end
+    disp_on : begin lcd_data<=8'b0000_1100; lcd_e<=(cnt_clk==1); end
+    disp_line1 : begin if(cnt_line==0) lcd_data<=address_line1;
+                 else                  lcd_data<=data_line1(cnt_line-1);
+                 lcd_e<=(cnt_clk==1);
+                 end
+    disp_line2 : begin if(cnt_line==0) lcd_data<=address_line2;
+                 else                  lcd_data<=data_line2(cnt_line-1);
+                 lcd_e<=(cnt_clk==1);
+                 end
+    delay_2sec : begin lcd_data<=8'b0000_0010;
+                 lcd_e<=(cnt_clk==1);
+                 end
+    disp_line3 : begin if(cnt_line==0) lcd_data<=address_line1;
+                 else                  lcd_data<=data_line3(cnt_line-1);
+                 lcd_e<=(cnt_clk==1);
+                 end
+    disp_line4 : begin if(cnt_line==0) lcd_data<=address_line2;
+                 else                  lcd_data<=data_line4(cnt_line-1);
+                 lcd_e<=(cnt_clk==1);
+                 end
+    delay_2sec_B : begin lcd_data<=8'b0000_0010;
+                   lcd_e<=(cnt_clk==1);
+                   end
+    clear : begin lcd_data<=8'b0000_0001;
+                  lcd_e<=(cnt_clk==1);
+                  end
+     endcase
+     end
+     end
+    
+endmodule
