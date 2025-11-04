@@ -1,0 +1,30 @@
+module tb_mux21_4b(
+
+    );
+    
+    reg [3:0] a, b;
+    reg sel;
+    wire [3:0] out;
+    
+    mux21_4b_if U0 (a, b, sel, out);
+    
+    initial begin
+    a=4'h1; b=4'h8;
+    #20 a=4'h2; b=4'h9;
+    #20 a=4'h3; b=4'ha;
+    #20 a=4'h4; b=4'hb;
+    #20 a=4'h5; b=4'hc;
+    #20 a=4'h6; b=4'hd;
+    #20 a=4'h7; b=4'he;
+    #20 a=4'h8; b=4'hf;
+    end
+    
+    initial begin
+    sel=1'b1;
+    #50 sel=1'b0;
+    #40 sel=1'b1;
+    #40 sel=1'b0;
+    #30 $finish;
+    end
+    
+endmodule
