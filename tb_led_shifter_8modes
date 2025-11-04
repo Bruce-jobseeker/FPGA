@@ -1,0 +1,23 @@
+module tb_led_shifter_8modes(
+
+    );
+    
+    reg mclk, rst;
+    reg [3:0] mode;
+    wire [7:0] led_out;
+    
+    led_shifter_8modes U0 (mclk, rst, mode, led_out);
+    
+    initial begin
+    mclk=1'b0; rst=1'b1; mode=4'b0001;
+    #100 rst=1'b0;
+    #100 mode=4'b0010;
+    #100 mode=4'b0100;
+    #1000 mode=4'b1000;
+    #10000 $finish;
+    end
+    
+    always
+    #5 mclk=~mclk;
+    
+endmodule
