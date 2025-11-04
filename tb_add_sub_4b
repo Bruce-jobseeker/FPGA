@@ -1,0 +1,24 @@
+module tb_add_sub_4b(
+
+    );
+    
+    reg [3:0] a, b;
+    reg mode;
+    wire [3:0] sum;
+    wire cout;
+    
+    add_sub_4b U0 (a, b, mode, sum, cout);
+    
+    initial begin
+    a=4'b0011; b=4'b0001; mode=1'b0;
+    #10 a=4'b0101; b=4'b0010;
+    #10 a=4'b0110; b=4'b0001;
+    #10 a=4'b0111; b=4'b0010; mode=1'b1;
+    #10 a=4'b0110; b=4'b0100;
+    #10 a=4'b0011; b=4'b0010;
+    #20 $finish;
+    end
+    
+    
+    
+endmodule
