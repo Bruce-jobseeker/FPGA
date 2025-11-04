@@ -1,0 +1,41 @@
+module LRS_ring_cnt8b_for(
+    input clk,
+    input rst,
+    input mode,
+    output [7:0] cnt
+    );
+    
+    reg [7:0] cnt;
+    integer i;
+    
+    reg [19:0] cnt_clk;
+    reg clk_10hz;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_10hz<=0; end
+    else begin
+    if(cnt_clk==599999) begin cnt_clk<=0; clk_10hz<=~clk_10hz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+    
+    always@(posedge clk_10hz, posedge rst) begin
+    if(rst) cnt<=8'b0000_0001;
+    else begin
+    
+    if(mode) begin
+    for(i=0; i<7; i=i+1)
+    cnt[i+1]<=cnt[i];
+    cnt[0]<=cnt[7];
+    end
+    
+    else if(!mode) begin
+    for(i=0; i<7; i=i+1)
+    cnt[i]<=cnt[i+1];
+    cnt[7]<=cnt[0];
+    end
+    
+    end
+    end
+    
+endmodule
