@@ -1,0 +1,9 @@
+module nand2_primitive(
+    input a,
+    input b,
+    output y
+    );
+    
+    nand U0 (y, a, b);
+    
+endmodule
