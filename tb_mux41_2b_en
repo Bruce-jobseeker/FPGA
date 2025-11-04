@@ -1,0 +1,25 @@
+module tb_mux41_2b_en(
+
+    );
+    
+    reg [1:0] a, b, c, d, sel;
+    reg enable;
+    wire [1:0] out;
+    
+    mux41_2b_en U0 (a, b, c, d, sel, enable, out);
+    
+    initial begin
+    a=2'b00; b=2'b01; c=2'b10; d=2'b11; sel=2'b00;
+    #10 sel=2'b01;
+    #10 sel=2'b10;
+    #10 sel=2'b11;
+    #20 $finish;
+    end
+    
+    initial begin
+    enable=1'b0;
+    #40 enable=1'b1;
+    #20 $finish;
+    end
+    
+endmodule
