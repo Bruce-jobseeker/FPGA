@@ -1,0 +1,21 @@
+module tb_enc_4to2_en(
+
+    );
+    
+    reg [3:0] enc_in;
+    reg enable;
+    wire [1:0] enc_out;
+    
+    enc_4to2_en U0 (enc_in, enable, enc_out);
+    
+    initial begin
+    enc_in=4'b0001; enable=1'b0;
+    #40 enable=1'b1;
+    #10 enc_in=4'b0001; enable=1'b0;
+    #50 $finish;
+    end
+    
+    always
+    #10 enc_in=enc_in<<1;
+    
+endmodule
