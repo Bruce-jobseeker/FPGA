@@ -1,0 +1,17 @@
+module enc_8to3_for(
+    input [7:0] enc_in,
+    output [2:0] enc_out
+    );
+    
+    reg [2:0] enc_out;
+    integer i;
+    
+    always@(enc_in) begin
+    enc_out=3'b000;
+    for(i=0; i<8; i=i+1)begin
+    if(enc_in[i]) begin enc_out=i;
+    end
+    end
+    end
+    
+endmodule
