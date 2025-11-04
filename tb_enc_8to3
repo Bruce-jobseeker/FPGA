@@ -1,0 +1,18 @@
+module tb_enc_8to3(
+
+    );
+    
+    reg [7:0] enc_in;
+    wire [2:0] enc_out;
+    
+    enc_8to3_for U0 (enc_in, enc_out);
+
+   initial begin
+   enc_in=8'b00000001;
+   #100 $finish;
+   end
+   
+   always
+   #10 enc_in=enc_in<<1;
+    
+endmodule
