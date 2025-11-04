@@ -1,0 +1,30 @@
+module LFSR_8b(
+    input clk,
+    input rst,
+    output [7:0] cnt
+    );
+    
+    wire sout;
+    
+    reg q8, q7, q6 ,q5, q4, q3, q2, q1;
+    assign cnt={q8, q7, q6 ,q5, q4, q3, q2, q1};
+    assign sout=q8;
+    
+    reg [19:0] cnt_clk;
+    reg clk_10hz;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_10hz<=0; end
+    else begin
+    if(cnt_clk==599999) begin cnt_clk<=0; clk_10hz<=~clk_10hz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+    
+    always@(posedge clk_10hz, posedge rst) begin
+    if(rst) {q8, q7, q6, q5, q4, q3, q2, q1}<=8'b1111_1111;
+    else 
+    {q8, q7, q6, q5, q4, q3, q2, q1}<={q7, q6, q5, (q4^sout), (q3^sout), (q2^sout), q1, sout};
+    end
+    
+endmodule
