@@ -1,0 +1,15 @@
+module fa_primitive(
+    input a,
+    input b,
+    input cin,
+    output sum,
+    output cout
+    );
+    
+    xor U0 (s1, a, b);
+    and U1 (c1, a, b);
+    and U2 (c2, s1, cin);
+    xor U3 (sum, s1, cin);
+    or U4 (cout, c1, c2);
+    
+endmodule
