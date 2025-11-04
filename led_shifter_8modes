@@ -1,0 +1,63 @@
+module led_shifter_8modes(
+    input mclk,
+    input rst,
+    input [3:0] mode,
+    output [7:0] led_out
+    );
+    
+    reg [7:0] led_out;
+    reg [2:0] cnt1, cnt2, cnt3;
+    reg clk_100hz, clk_10hz, clk_1hz, clk_05hz, clk_ledshift;
+    reg [15:0] cnt_clk;
+    
+    always@(posedge mclk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_100hz<=0; end
+    else begin
+    if(cnt_clk==59999) begin cnt_clk<=0; clk_100hz<=~clk_100hz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+    
+    always@(posedge clk_100hz, posedge rst) begin
+    if(rst) begin cnt1<=0; clk_10hz<=0; end
+    else begin
+    if (cnt1==4) begin cnt1<=0; clk_10hz<=~clk_10hz; end
+    else cnt1<=cnt1+1;
+    end
+    end
+    
+    always@(posedge clk_10hz, posedge rst) begin
+    if(rst) begin cnt2<=0; clk_1hz<=0; end
+    else begin
+    if (cnt2==4) begin cnt2<=0; clk_1hz<=~clk_1hz; end
+    else cnt2<=cnt2+1;
+    end
+    end
+    
+    always@(posedge clk_1hz, posedge rst) begin
+    if(rst) begin cnt3<=0; clk_05hz<=0; end
+    else begin
+    if(cnt3==1) begin cnt3<=0; clk_05hz<=~clk_05hz; end
+    else cnt3<=cnt3+1;
+    end
+    end
+    
+    always@(mode, clk_100hz, clk_10hz, clk_1hz, clk_05hz) begin
+    casex(mode)
+    4'bx000 : clk_ledshift=clk_100hz;
+    4'bx001 : clk_ledshift=clk_10hz;
+    4'bx010 : clk_ledshift=clk_1hz;
+    4'bx100 : clk_ledshift=clk_05hz;
+    default : clk_ledshift=clk_100hz;
+    endcase
+    end
+    
+    always@(posedge clk_ledshift, posedge rst) begin
+    if(rst) led_out<=8'b0000_0001;
+    else begin 
+    if(mode[3])
+    led_out<={led_out[6:0], led_out[7]};
+    else if(!mode[3])
+    led_out<={led_out[0], led_out[7:1]};
+    end
+    end
