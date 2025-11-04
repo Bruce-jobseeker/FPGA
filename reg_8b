@@ -1,0 +1,15 @@
+module reg_8b(
+    input clk,
+    input rst,
+    input [7:0] din,
+    output [7:0] dout
+    );
+    
+    reg [7:0] dout;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) dout<=0;
+    else dout<=din;
+    end
+    
+endmodule
