@@ -1,0 +1,17 @@
+module dec_3to8_for(
+    input [2:0] dec_in,
+    output [7:0] dec_out
+    );
+    
+    reg [7:0] dec_out;
+    integer i;
+    
+    always@(dec_in) begin
+    for(i=0; i<8; i=i+1) begin
+    if(dec_in==i) dec_out[i]=1;
+    else dec_out[i]=0;
+    end
+    end
+    
+    
+endmodule
