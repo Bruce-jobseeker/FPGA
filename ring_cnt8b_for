@@ -1,0 +1,22 @@
+module ring_cnt8b_for(
+    input clk,
+    input rst,
+    output [7:0] cnt
+    );
+    
+    reg [7:0] cnt;
+    integer i;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) cnt<=1;
+    else begin
+    if((cnt==0) || (cnt==128)) cnt<=1;
+    else
+    for(i=0; i<7; i=i+1)
+    cnt[i+1]<=cnt[i];
+    cnt[0]<=cnt[7];
+    end
+    end
+    
+    
+endmodule
