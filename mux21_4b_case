@@ -1,0 +1,17 @@
+module mux21_4b_case(
+    input [3:0] a,
+    input [3:0] b,
+    input sel,
+    output [3:0] out
+    );
+    
+    reg [3:0] out;
+    
+    always@(a, b, sel) begin
+    case(sel)
+    1'b1:out=a;
+    1'b0:out=b;
+    endcase
+    end
+    
+endmodule
