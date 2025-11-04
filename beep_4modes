@@ -1,0 +1,43 @@
+module beep_4modes(
+    input clk,
+    input rst,
+    input [3:0] mode,
+    output piezo_out
+    );
+    
+    reg clk_10hz;
+    reg [5:0] cnt_10hz;
+    reg [3:0] pwm_cnt, beep_period;
+    reg [19:0] cnt_clk;
+    reg clk_10hz;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_10hz<=0; end
+    else begin
+    if(cnt_clk==599999) begin cnt_clk<=0; clk_10hz<=~clk_10hz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+    
+    always@(posedge clk_10hz, posedge rst) begin
+    if(rst) pwm_cnt<=0;
+    else begin
+    if(pwm_cnt >=9) pwm_cnt<=0;
+    else pwm_cnt<=pwm_cnt+1;
+    end
+    end
+    
+    always@(mode) begin
+    case(mode)
+    4'b0001 : beep_period=1;
+    4'b0010 : beep_period=4;
+    4'b0100 : beep_period=7;
+    4'b1000 : beep_period=9;
+    default : beep_period=0;
+    endcase
+    end
+    
+    assign beep_on=(pwm_cnt<beep_period) ? 1:0;
+    assign piezo_out=beep_on&clk;
+    
+endmodule
