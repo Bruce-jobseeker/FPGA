@@ -1,0 +1,23 @@
+module tb_shift_reg8b_pld(
+
+    );
+    
+    reg clk, rst, load, mode;
+    reg [7:0] din;
+    wire [7:0] pout;
+    
+    shift_reg8b_pld U0 (clk, rst, load, mode, din, pout);
+    
+    initial begin
+    clk=1'b0; rst=1'b1; load=1'b0; mode=1'b0; din=8'b0000_0000;
+    #10 rst=1'b0;
+    #150 rst=1'b1; mode=1'b1;
+    #10 rst=1'b0;
+    #150 load=1'b1; din=8'b1010_1010;
+    #20 $finish;
+    end
+    
+    always
+    #10 clk=~clk;
+    
+endmodule
