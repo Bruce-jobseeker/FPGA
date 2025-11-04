@@ -1,0 +1,19 @@
+module tb_bcd_cnt_fnd(
+
+    );
+    
+    reg clk, rst;
+    wire [7:0] fnd_data;
+    
+    bcd_cnt_fnd U0 (clk, rst, fnd_data);
+    
+    initial begin
+    clk=1'b0; rst=1'b1;
+    #10 rst=1'b0;
+    #300 $finish;
+    end
+    
+    always
+    #10 clk=~clk;
+    
+endmodule
