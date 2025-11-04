@@ -1,0 +1,20 @@
+module enc_8to3_if(
+    input [7:0] enc_in,
+    output [2:0] enc_out
+    );
+    
+    reg [2:0] enc_out;
+    
+    always@(enc_in) begin
+    if(enc_in==8'h01) enc_out=0;
+    else if(enc_in==8'h02) enc_out=1;
+    else if(enc_in==8'h04) enc_out=2;
+    else if(enc_in==8'h08) enc_out=3;
+    else if(enc_in==8'h10) enc_out=4;
+    else if(enc_in==8'h20) enc_out=5;
+    else if(enc_in==8'h40) enc_out=6;
+    else if(enc_in==8'h80) enc_out=7;
+    else enc_out=3'b000;
+    end
+    
+endmodule
