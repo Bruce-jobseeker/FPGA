@@ -1,0 +1,135 @@
+module keypad_led (
+    input clk,
+    input rst,
+    output [3:0] row,         // Rows driven by FPGA
+    input [2:0] col,              // Columns read from keypad
+    output [7:0] led          // 8 LEDs
+);
+
+   reg [3:0] row;
+   reg [7:0] led;
+
+    reg [3:0] scan_cnt;
+    reg [7:0] key_map;
+
+
+    reg [9:0] cnt_clk;
+    reg clk_10khz;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_10khz<=0; end
+    else begin
+    if(cnt_clk==599) begin cnt_clk<=0; clk_10khz<=~clk_10khz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+
+    always @(posedge clk_10khz or posedge rst) begin
+        if (rst) begin
+            scan_cnt <= 0;
+            row <= 4'b1110;
+            key_map <= 8'b00000000;
+            led <= 8'b00000000;
+        end else begin
+            // Rotate row scanning
+            scan_cnt <= scan_cnt + 1;
+            case (scan_cnt[1:0])
+                2'b00: row <= 4'b1110;
+                2'b01: row <= 4'b1101;
+                2'b10: row <= 4'b1011;
+                2'b11: row <= 4'b0111;
+            endcase
+
+            // Detect key press and map to LED
+            if (col != 3'b111) begin
+                case ({row, col})
+                    7'b1110_110: key_map <= 8'b00000001; // Key 1
+                    7'b1110_101: key_map <= 8'b00000010; // Key 2
+                    7'b1110_011: key_map <= 8'b00000100; // Key 3
+                    7'b1101_110: key_map <= 8'b00001000; // Key 4
+                    7'b1101_101: key_map <= 8'b00010000; // Key 5
+                    7'b1101_011: key_map <= 8'b00100000; // Key 6
+                    7'b1011_110: key_map <= 8'b01000000; // Key 7
+                    7'b1011_101: key_map <= 8'b10000000; // Key 8
+                    default: key_map <= 8'b00000000;
+                endcase
+            end else begin
+                key_map <= 8'b00000000;
+            end
+
+            led <= key_map;
+        end
+    end
+endmodule
+
+module piezo_tone(
+    input clk,
+    input rst,
+    input [7:0] key_in,
+    output piezo_freq
+    );
+    
+    parameter C_tone = 956;
+    parameter D_tone = 851;
+    parameter E_tone = 758;
+    parameter F_tone = 716;
+    parameter G_tone = 638;
+    parameter A_tone = 568;
+    parameter B_tone = 506;
+    
+    reg [9:0] piezo_cnt;
+    reg piezo_freq;
+    reg [9:0] cnt;
+    reg [3:0] cnt_clk;
+    reg clk_500khz;
+    
+    always@(posedge clk, posedge rst) begin
+    if(rst) begin cnt_clk<=0; clk_500khz<=0; end
+    else begin
+    if(cnt_clk==11) begin cnt_clk<=0; clk_500khz<=~clk_500khz; end
+    else cnt_clk<=cnt_clk+1;
+    end
+    end
+    
+    always@(key_in) begin
+    case(key_in)
+    8'b0000_0001 : piezo_cnt=C_tone;
+    8'b0000_0010 : piezo_cnt=D_tone;
+    8'b0000_0100 : piezo_cnt=E_tone;
+    8'b0000_1000 : piezo_cnt=F_tone;
+    8'b0001_0000 : piezo_cnt=G_tone;
+    8'b0010_0000 : piezo_cnt=A_tone;
+    8'b0100_0000 : piezo_cnt=B_tone;
+    default : piezo_cnt=0;
+    endcase
+    end
+    
+    always@(posedge clk_500khz, posedge rst) begin
+    if(rst) begin cnt<=0; piezo_freq<=0;
+    end
+    else begin
+    if(cnt==piezo_cnt) begin
+    cnt<=0;
+    piezo_freq<=~piezo_freq;
+    end
+    else cnt<=cnt+1;
+    end
+    end
+    
+    
+endmodule
+
+module piezo_piano(
+    input clk,
+    input rst,
+    output [3:0] row,
+    input [2:0] col,
+    output piezo_out
+    );
+    
+    wire [7:0] key_data;
+    
+    keypad_led U0 (.clk(clk), .rst(rst), .row(row), .col(col), .led(key_data));
+    piezo_tone U1 (.clk(clk), .rst(rst), .key_in(key_data), .piezo_freq(piezo_out));
+    
+endmodule
