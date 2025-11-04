@@ -1,0 +1,24 @@
+module tb_shift_reg8b(
+
+    );
+    
+    reg clk, rst, sdin;
+    wire [7:0] dout;
+    
+    shift_reg8b_for U0 (clk, rst, sdin, dout);
+    
+    initial begin
+    clk=0; rst=0;
+    #3 rst=1; #10 rst=0;
+    end
+    
+    always #5 clk=~clk;
+    
+    always begin
+    sdin=1; #20 sdin=0;
+    #10 sdin=1; #10 sdin=0;
+    #20 sdin=1; #30 sdin=0;
+    #10 sdin=1; #20 $finish;
+    end
+    
+endmodule
