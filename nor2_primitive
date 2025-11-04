@@ -1,0 +1,9 @@
+module nor2_primitive(
+    input a,
+    input b,
+    output y
+    );
+    
+    nor U0 (y, a, b);
+    
+endmodule
